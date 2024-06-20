@@ -1,0 +1,6 @@
+// invoke it on DEMAND without installing typescript globally
+WorkSpace/FolderName > npx tsc fileName.ts 
+
+1. Check for code in fileName for errors
+2. Convert it to regular Javascript code that you can execute in browser or with NodeJS
+ 
