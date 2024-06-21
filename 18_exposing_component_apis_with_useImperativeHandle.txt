@@ -54,13 +54,13 @@ type FormProps = ComponentPropsWithoutRef<"form"> & {
 
 const Form = forwardRef<FormHandle, FormProps>(
   ({ onSave, children, ...otherProps }: FormProps, ref) => {
-    const form = useRef<HTMLFormElement>(null);
+    const componentFormRef = useRef<HTMLFormElement>(null);
 
     useImperativeHandle(ref, () => {
       return {
         clear() {
           console.log("clearing the form");
-          form.current?.reset();
+          componentFormRef.current?.reset();
         },
       };
     }); // useImperativeHandle only works in component that recieves forwardRef
@@ -75,7 +75,7 @@ const Form = forwardRef<FormHandle, FormProps>(
       onSave(data);
     };
     return (
-      <form onSubmit={handleSubmit} {...otherProps}>
+      <form onSubmit={handleSubmit} {...otherProps} ref={componentFormRef}>
         {children}
       </form>
     );
