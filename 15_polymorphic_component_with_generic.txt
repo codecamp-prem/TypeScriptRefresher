@@ -1,0 +1,89 @@
+/*
+Polymorphic Component : wrapper component where we don't know in advanced which component it will wrap.
+*/
+
+
+// Example of Polymorphic Component
+
+Button.tsx
+----------
+import { ComponentPropsWithoutRef } from "react";
+
+type ButtonProps = ComponentPropsWithoutRef<"button"> & {
+  href?: never;
+};
+
+type AnchorProps = ComponentPropsWithoutRef<"a"> & {
+  href?: string;
+};
+
+
+//  'props is AnchorProps' type predicate feature
+// which tell return type is Boolean of AnchorProps type
+function isAnchorProps(props: ButtonProps | AnchorProps): props is AnchorProps {
+  return "href" in props;
+}
+
+const Button = (props: ButtonProps | AnchorProps) => {
+  //   const { el, ...otherProps } = props;
+  if (isAnchorProps(props)) {
+    return <a className="button" {...props}></a>;
+  }
+  return <button className="button" {...props}></button>;
+};
+
+export default Button;
+
+
+App.tsx 
+-------
+
+import Button from "./components/Button";
+import Container from "./components/Container";
+
+function App() {
+  return (
+    <main>
+      <Container as={Button} onClick={() => {}} type="button">
+        Click me
+      </Container>
+    </main>
+  );
+}
+
+export default App;
+
+Container.tsx
+-------------
+/*
+Example of Polymorphic Component : wrapper component where we don't know in advanced which component it will wrap.
+
+
+Like this "Container" component can be turned into any element of
+our choice. Here for example it is turn into "Button" component.
+ */
+
+import {
+  type ComponentPropsWithoutRef,
+  type ElementType,
+  type ReactNode,
+} from "react";
+
+type ContainerType<T extends ElementType> = {
+  as?: T; // ElementType:    name of the component
+  children: ReactNode; // renders the jsx or raw text that can be output
+} & ComponentPropsWithoutRef<T>;
+
+// ComponentPropsWithoutRef also works well with custom component, not only inbuilt elements props
+
+const Container = <C extends ElementType>({
+  as,
+  children,
+  ...props
+}: ContainerType<C>) => {
+  const Component = as || "div"; // same as const Container = ({as : Component}:ContainerType) => { ... } .component name is usually starts from Capital letter and props name usually in small case
+
+  return <Component {...props}>{children}</Component>;
+};
+
+export default Container;
