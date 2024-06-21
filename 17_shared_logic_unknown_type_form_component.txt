@@ -1,0 +1,58 @@
+// Sharing logic with unknown type casting
+// Form Component Wrapper
+
+
+App.tsx
+--------
+import Button from "./components/Button";
+import Form from "./components/Form";
+import Input from "./components/Input";
+
+function App() {
+  const handleSave = (data: unknown) => {
+    const extractedData = data as {
+      name: string;
+      age: string;
+    };
+    console.log(extractedData);
+  };
+  return (
+    <main>
+      <Form onSave={handleSave}>
+        <Input label="name" id="name" type="text" />
+        <Input label="age" id="age" type="number" />
+        <p>
+          <Button>Save</Button>
+        </p>
+      </Form>
+    </main>
+  );
+}
+
+export default App;
+
+components/Form.tsx
+-------------------
+import { type ComponentPropsWithoutRef, type FormEvent } from "react";
+
+type FormProps = ComponentPropsWithoutRef<"form"> & {
+  onSave: (value: unknown) => void;
+};
+
+const Form = ({ onSave, children, ...otherProps }: FormProps) => {
+  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+
+    const formData = new FormData(event.currentTarget);
+    const data = Object.fromEntries(formData);
+
+    onSave(data);
+  };
+  return (
+    <form onSubmit={handleSubmit} {...otherProps}>
+      {children}
+    </form>
+  );
+};
+
+export default Form;
